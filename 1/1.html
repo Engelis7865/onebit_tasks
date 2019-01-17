@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+
+    <title>Калькулятор</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <main role="main" class="container">
+
+
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Число 1 </span>
+            </div>
+            <input type="number" class="form-control" aria-label="Введите 1-е число" aria-describedby="inputGroup-sizing-sm"
+                id="one">
+        </div>
+        <br>
+
+        <div class="select-group">
+            <select class="btn btn-secondary dropdown-toggleb" id="dropdownMenu" name="function">
+                <option value="*"> * </option>
+                <option value="+"> + </option>
+                <option value="%"> % </option>
+            </select>
+        </div>
+        <br>
+        <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">Число 2</span>
+            </div>
+            <input type="number" class="form-control " aria-label="Введите 2-е число" aria-describedby="inputGroup-sizing-sm"
+                id="two">
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-secondary" type="submit" onclick="calcThis()">Расчитать</button>
+        </div>
+        <BR>
+        <BR>    
+        <div class="form-group">
+             <input type="text" class="form-control" id="result" placeholder="Результат">
+        </div>
+
+    </main>
+    <script src="../vendor/jquery/dist/jquery.min.js"></script>
+    <script>
+        function calcThis() {
+            var one = $("#one").val();
+            var two = $("#two").val();
+            var sel = $("#dropdownMenu").val();
+            var doIt = true;
+            if (one == "") {
+                $("#one").addClass("is-invalid");
+                doIt = false;
+            } else {
+                $("#one").removeClass("is-invalid");
+            }
+            if (two == "") {
+                $("#two").addClass("is-invalid");
+                doIt = false;
+            } else {
+                $("#two").removeClass("is-invalid");
+            }
+            if (!doIt) {
+                return;
+            }
+            $.ajax({
+                type: "post",
+                url: "http://localhost/calc/index.php",
+                data: {
+                    val_a: one,
+                    val_b: two,
+                    method: sel
+                },
+                success: function (data) {
+                    $("#result").val(data);            
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
