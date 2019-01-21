@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+
+    <title>Чек-лист</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="css.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h2 align="center">Заказ</h2>
+
+        <div class="select-group">
+            <h6>Выберите вид спорта</h6>
+            <select class="btn btn-secondary dropdown-toggleb" id="SelSport" name="Вид спорта" onchange="SelectSport()">
+                <option value="ArtGym"> Художетвенная гимнастика </option>
+                <option value="SportGym"> Спортивная гимнастика </option>
+                <option value="FigSka"> Фигурное катание </option>
+            </select>
+        </div>
+        <br>
+        <h6>Вид заказа</h6>
+        <div data-toggle="buttons" id="GR">
+            <a> Индивидульный <input name="orderType" type="radio" id="Indiv" autocomplete="off" checked onclick="checkedOrderType(0)">
+            </a>
+            <a> Групповой <input name="orderType" type="radio" id="Group" autocomplete="off" onclick="checkedOrderType(1)"></a>
+        </div>
+        <br>
+        <br>
+
+        <div class="form-group">
+            <h6>Укажите количесво человек в группе </h6>
+            <input type="number" class="form-control" id="Count" disabled required>
+        </div>
+        <form>
+            <div class="select-group">
+                <h6>Выберите изделие</h6>
+                <select class="btn btn-secondary dropdown-toggleb" id="Inven" name="Изделие" onchange="SelectInven()">
+                    <optgroup id="g1" label="Художественная гимнастика">
+                        <option value="A1">Купальник</option>
+                        <option value="A2">Комбинезон</option>
+                        <option value="A3">Другое (укажите в коментариях)</option>
+                    </optgroup>
+                    <optgroup id="g2" label="Спортивная гимнастика" disabled>
+                        <option value="S1">Купальник</option>
+                        <option value="S2">Лосины</option>
+                        <option value="S3">Другое (укажите в коментариях)</option>
+                    </optgroup>
+                    <optgroup id="g3" label="Фигурное катание" disabled>
+                        <option value="F1">Платье</option>
+                        <option value="F2">Комбинезон</option>
+                        <option value="F3">Рубашка</option>
+                        <option value="F4">Брюки</option>
+                        <option value="F5">Другое кажите в коментариях</option>
+                    </optgroup>
+                </select>
+            </div>
+        </form>
+        <br>
+
+        <div class="form-group">
+            <h6> <label for="exampleFormControlTextarea1">Коментарий</label></h6>
+            <textarea class="form-control" id="coment" rows="2"></textarea>
+        </div>
+
+        <h6>Укажите пол</h6>
+        <div data-toggle="buttons" >
+            <a><input name="type" type="radio" id="M" autocomplete="off" checked> Мужской</a>
+            <a><input name="type" type="radio" id="W" autocomplete="off"> Женский</a>
+        </div>
+        <br>
+        <br>
+        <form>
+            <h6>Заполните ваши мерки</h6>
+            <div class="form-group">
+                <label for="formGroupExampleInput">Рост</label>
+                <input type="number" class="form-control" id="growth" disabled required>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Обхват туловища</label>
+                <input type="number" class="form-control" id="body" required>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Обхват груди</label>
+                <input type="number" class="form-control" id="chest" required>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Обхват талии</label>
+                <input type="number" class="form-control" id="waist" required>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Обхват бедер</label>
+                <input type="number" class="form-control" id="hip" disabled required>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Обхват шеи</label>
+                <input type="number" class="form-control" id="neck" disabled required>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Ширина плеча</label>
+                <input type="number" class="form-control" id="width" disabled required>
+            </div>
+            <div class="form-group">
+                <label for="formGroupExampleInput2">Обхват плеча</label>
+                <input type="number" class="form-control" id="shoulder" disabled required>
+            </div>
+        </form>
+
+     
+            <button type="submit" class="btn btn-secondary" onclick="addOrder()">Добавить следующее изделие</button>
+            <button type="button" class="btn btn-secondary" onclick="addAndClear()" value="Добавить" id="button" disabled>Добавить изделие на следующего человека</button>
+
+    </div>
+    <script src="../vendor/jquery/dist/jquery.js"></script>
+    <script src="./vendor/jquery-cookie/jquery.cookie.js"></script>
+    <script>
+        var orders = [];
+
+        function ElementIsCorrect(idElement){
+            var e = $(idElement);
+            if ((e.attr("disabled") == undefined) && (e.val()=="")){
+                e.addClass("is-invalid");
+                
+                return false;
+            } else {
+                e.removeClass("is-invalid");
+                return true;
+            }
+
+        }
+        
+        function addOrder() {
+            var NoError = ElementIsCorrect("#growth");
+            NoError &= ElementIsCorrect("#body");
+            NoError &= ElementIsCorrect("#chest");
+            NoError &= ElementIsCorrect("#waist");
+            NoError &= ElementIsCorrect("#hip");
+            NoError &= ElementIsCorrect("#neck");
+            NoError &= ElementIsCorrect("#width");
+            NoError &= ElementIsCorrect("#shoulder");
+
+            if (NoError) {
+                var merks = {
+                    growth: $("#growth").val(),
+                    body: $("#body").val(),
+                    chest: $("#chest").val(),
+                    waist: $("#waist").val(),
+                    hip: $("#hip").val(),
+                    neck: $("#neck").val(),
+                    width: $("#width").val(),
+                    shoulder: $("#shoulder").val(),
+                };
+                orders.push(merks);
+            }
+
+            return NoError;
+        }
+
+        function addAndClear() {
+            if(ElementIsCorrect("#Count"))
+            {
+                if (addOrder()) {
+                    $("#Inven").val("A1");
+                    $("#coment").val("");
+                    $("#M").attr("checked", true);
+                    $("#growth").val("");
+                    $("#body").val("");
+                    $("#chest").val("");
+                    $("#waist").val("");
+                    $("#hip").val("");
+                    $("#neck").val("");
+                    $("#width").val("");
+                    $("#shoulder").val("");
+                }
+            }
+        }
+        
+
+        function checkedOrderType(orederType) {
+            if (orederType == 0) {
+                $("#Count").attr("disabled", true); 
+                $("#button").attr("disabled", true);               
+            } else {
+                $("#Count").attr("disabled", false);
+                $("#button").attr("disabled", false);
+            }
+        }
+
+        function SelectSport() {
+            var SelSport = $("#SelSport").val();
+            $("#g1").attr("disabled", true);
+            $("#g2").attr("disabled", true);
+            $("#g3").attr("disabled", true);
+            if (SelSport == "ArtGym") {
+                $("#g1").attr("disabled", false);
+            }
+            if (SelSport == "SportGym") {
+                $("#g2").attr("disabled", false);
+            }
+            if (SelSport == "FigSka") {
+                $("#g3").attr("disabled", false);
+            }
+        }
+
+        function SelectInven() {
+            var SelectInven = $("#Inven").val();
+            $("#growth").attr("disabled", true);
+            $("#body").attr("disabled", true);
+            $("#chest").attr("disabled", true);
+            $("#waist").attr("disabled", true);
+            $("#hip").attr("disabled", true);
+            $("#neck").attr("disabled", true);
+            $("#width").attr("disabled", true);
+            $("#shoulder").attr("disabled", true);
+            
+            if ((SelectInven == "A2") || (SelectInven == "F2")) {
+                $("#growth").attr("disabled", false);
+                $("#waist").attr("disabled", false);
+                $("#hip").attr("disabled", false);
+                $("#width").attr("disabled", false);
+                $("#shoulder").attr("disabled", false);
+            }
+
+            if (SelectInven == "S1" || SelectInven == "A1") {
+                $("#body").attr("disabled", false);
+                $("#waist").attr("disabled", false);
+                $("#chest").attr("disabled", false);
+            }
+
+            if (SelectInven == "S2" || SelectInven == "F4") {
+                $("#growth").attr("disabled", false);
+                $("#hip").attr("disabled", false);
+            }
+
+            if (SelectInven == "F1") {
+                $("#growth").attr("disabled", false);
+                $("#chest").attr("disabled", false);
+                $("#chest").attr("disabled", false);
+                $("#width").attr("disabled", false);
+                $("#shoulder").attr("disabled", false);
+            }
+
+            
+            if (SelectInven == "F3") {
+                $("#chest").attr("disabled", false);
+                $("#waist").attr("disabled", false);
+                $("#neck").attr("disabled", false);
+                $("#width").attr("disabled", false);
+                $("#shoulder").attr("disabled", false);
+            }
+           
+        }
+
+    </script>
+
+</body>
+
+</html>
